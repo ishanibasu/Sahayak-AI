@@ -1,38 +1,350 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sahayak AI — Hyper-Local Emergency Response Platform">
+  <meta name="theme-color" content="#B71C1C">
 
+  <!-- PWA / Apple -->
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="my_app">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sahayak AI">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Sahayak AI">
+  <meta property="og:description" content="Hyper-Local Emergency Response Platform">
+  <meta property="og:type" content="website">
 
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-  <link rel="icon" type="image/png" href="favicon.png" />
-
-  <title>my_app</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json">
 
+  <title>Sahayak AI — Emergency Response</title>
+
+  <!-- ✅ FIX: Use flutter.js with defer — matches your Flutter version's boot pattern -->
   <script src="flutter.js" defer></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500&display=swap"
+    rel="stylesheet">
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --red-900: #7f0000;
+      --red-700: #B71C1C;
+      --red-500: #EF5350;
+      --red-300: #EF9A9A;
+      --charcoal: #1A1A1A;
+      --ash: #2C2C2C;
+      --smoke: #3D3D3D;
+      --off-white: #F5F0EB;
+      --muted: #9E9E9E;
+      --font-display: 'Barlow Condensed', sans-serif;
+      --font-body: 'Barlow', sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--charcoal);
+      color: var(--off-white);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Splash screen */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--charcoal);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #splash.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .splash-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--red-700);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .splash-icon svg {
+      width: 40px;
+      height: 40px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 32px rgba(183, 28, 28, 0.4);
+      }
+
+      50% {
+        box-shadow: 0 0 64px rgba(183, 28, 28, 0.8);
+      }
+    }
+
+    .splash-name {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--off-white);
+    }
+
+    .splash-name span {
+      color: var(--red-500);
+    }
+
+    .splash-tagline {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Loader bar */
+    .loader-track {
+      width: 200px;
+      height: 2px;
+      background: var(--ash);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loader-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--red-700), var(--red-500));
+      border-radius: 2px;
+      animation: load-sweep 1.8s ease-in-out infinite;
+    }
+
+    @keyframes load-sweep {
+      0% {
+        width: 0%;
+        margin-left: 0%;
+      }
+
+      50% {
+        width: 60%;
+        margin-left: 20%;
+      }
+
+      100% {
+        width: 0%;
+        margin-left: 100%;
+      }
+    }
+
+    .loader-text {
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: opacity 0.3s ease;
+    }
+
+    /* Status bar */
+    .splash-status {
+      position: fixed;
+      bottom: 24px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--red-500);
+      border-radius: 50%;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.2;
+      }
+    }
+
+    .status-label {
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Respect reduced-motion preference */
+    @media (prefers-reduced-motion: reduce) {
+
+      .splash-icon,
+      .loader-bar,
+      .status-dot {
+        animation: none;
+      }
+
+      .loader-bar {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      #splash {
+        transition: none;
+      }
+    }
+
+    /* Flutter mount target */
+    #flutter-host {
+      position: fixed;
+      inset: 0;
+    }
+  </style>
 </head>
 
-<body>
+<body ontouchstart="">
+
+  <div id="splash" role="status" aria-label="Loading Sahayak AI">
+    <div class="splash-logo">
+      <div class="splash-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" />
+          <path d="M8 12l2.5 2.5L16 9" stroke-width="2.2" />
+        </svg>
+      </div>
+      <div class="splash-name">Sahayak <span>AI</span></div>
+      <div class="splash-tagline">Hyper-Local Emergency Response</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <div class="loader-track">
+        <div class="loader-bar"></div>
+      </div>
+      <div class="loader-text" id="loader-text">Initialising systems</div>
+    </div>
+
+    <div class="splash-status" aria-hidden="true">
+      <div class="status-dot"></div>
+      <div class="status-label">Live network ready</div>
+    </div>
+  </div>
+
+  <div id="flutter-host"></div>
+
   <script>
-    window.addEventListener('load', function (ev) {
-      _flutter.loader.loadEntrypoint({
-        onEntrypointLoaded: function (engineInitializer) {
-          engineInitializer.initializeEngine().then(function (appRunner) {
-            appRunner.runApp();
-          });
-        }
+    (function () {
+      // Cycle loader status messages
+      var messages = [
+        'Initialising systems',
+        'Loading resources',
+        'Connecting network',
+        'Almost ready'
+      ];
+      var msgEl = document.getElementById('loader-text');
+      var msgIndex = 0;
+      var msgTimer = setInterval(function () {
+        msgIndex = (msgIndex + 1) % messages.length;
+        msgEl.style.opacity = '0';
+        setTimeout(function () {
+          msgEl.textContent = messages[msgIndex];
+          msgEl.style.opacity = '1';
+        }, 300);
+      }, 2000);
+
+      // Dismiss splash
+      function dismissSplash() {
+        clearInterval(msgTimer);
+        var splash = document.getElementById('splash');
+        splash.classList.add('hidden');
+        setTimeout(function () {
+          if (splash && splash.parentNode) {
+            splash.parentNode.removeChild(splash);
+          }
+        }, 700);
+      }
+
+      // ✅ FIX: Use loadEntrypoint — matches your Flutter version's boot API
+      window.addEventListener('load', function () {
+        _flutter.loader.loadEntrypoint({
+          onEntrypointLoaded: function (engineInitializer) {
+            engineInitializer.initializeEngine().then(function (appRunner) {
+              dismissSplash();
+              appRunner.runApp();
+            });
+          }
+        });
       });
-    });
+
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker
+            .register('flutter_service_worker.js?v=' + Date.now())
+            .catch(function (err) {
+              console.warn('[Sahayak AI] Service worker registration failed:', err);
+            });
+        });
+      }
+    })();
   </script>
+
 </body>
 
 </html>

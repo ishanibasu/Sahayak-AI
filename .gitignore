@@ -42,3 +42,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ── Secrets & Environment Variables ──
+.env
+.env.*
+*.env
+!.env.example
+
+# ── Build & Deploy Scripts (local only) ──
+build_and_deploy.bat
+deploy.bat
+*.secret.bat

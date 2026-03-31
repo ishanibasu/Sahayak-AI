@@ -1,15 +1,15 @@
-import 'dart:convert'; // ← correct placement: top of file
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // ✅ ADDED
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../models/emergency_request.dart';
 
 class GeminiService {
-  static const _apiKey = 'AIzaSyCADKDIzgO24HULWu59q5ZhWT_XP93nlV8';
+  static final String _apiKey = dotenv.env['GEMINI_API_KEY'] ?? ''; // ✅ FIXED
 
   final GenerativeModel _model = GenerativeModel(
     model: 'gemini-1.5-flash',
     apiKey: _apiKey,
     generationConfig: GenerationConfig(
-      //responseMimeType: 'application/json',
       maxOutputTokens: 256,
     ),
   );
@@ -49,7 +49,6 @@ Rules:
         reasoning: (parsed['reasoning'] as String?) ?? '',
       );
     } catch (_) {
-      // Fallback if Gemini is unavailable
       return (
         score: 50,
         level: CriticalityLevel.medium,
@@ -60,7 +59,6 @@ Rules:
 
   Map<String, dynamic> _parseJson(String text) {
     try {
-      // Strip markdown code fences if present
       final jsonRegex = RegExp(r'\{[\s\S]*\}');
       final match = jsonRegex.firstMatch(text);
       if (match == null) return {};

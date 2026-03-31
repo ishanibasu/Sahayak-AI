@@ -8,8 +8,6 @@ class DefaultFirebaseOptions {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
-      case TargetPlatform.iOS:
-        return ios;
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -17,32 +15,24 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // ── Paste your Firebase Console values here ──
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: "AIzaSyD2ow-Cc0YOWgn6Og2JzaCm9_yisn1p-IY",
-    authDomain: "sahayak-ai-47dcb.firebaseapp.com",
-    projectId: "sahayak-ai-47dcb",
-    storageBucket: "sahayak-ai-47dcb.firebasestorage.app",
-    messagingSenderId: "9716153561",
-    appId: "1:9716153561:web:bebeeb209827bce044d2c8",
+    apiKey: 'AIzaSyDBc8ansI-TteUqtcoIwchLhlnmT8IsZ3w',
+    appId: '1:9716153561:web:f6053d21f9db53ed44d2c8',
+    messagingSenderId: '9716153561',
+    projectId: 'sahayak-ai-47dcb',
+    authDomain: 'sahayak-ai-47dcb.firebaseapp.com',
+    storageBucket: 'sahayak-ai-47dcb.firebasestorage.app',
+    measurementId: 'G-4ER4FRDNXF',
   );
+
+  // ── Paste your Firebase Console values here ──
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: "AIzaSyD2ow-Cc0YOWgn6Og2JzaCm9_yisn1p-IY",
+    apiKey: "AIzaSyDwXXFJU4CFbip4dvST3AMxkUKJJe_o8O4",
     authDomain: "sahayak-ai-47dcb.firebaseapp.com",
     projectId: "sahayak-ai-47dcb",
     storageBucket: "sahayak-ai-47dcb.firebasestorage.app",
     messagingSenderId: "9716153561",
-    appId: "1:9716153561:web:bebeeb209827bce044d2c8",
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: "AIzaSyD2ow-Cc0YOWgn6Og2JzaCm9_yisn1p-IY",
-    authDomain: "sahayak-ai-47dcb.firebaseapp.com",
-    projectId: "sahayak-ai-47dcb",
-    storageBucket: "sahayak-ai-47dcb.firebasestorage.app",
-    messagingSenderId: "9716153561",
-    appId: "1:9716153561:web:bebeeb209827bce044d2c8",
-    iosBundleId: 'com.example.myApp',
+    appId: "1:9716153561:android:2b05a7eb6b21f52144d2c8",
   );
 }

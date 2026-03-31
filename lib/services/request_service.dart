@@ -1,3 +1,4 @@
+import 'dart:async'; // ✅ ADDED (required for .wait)
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,23 +7,38 @@ import '../models/emergency_request.dart';
 import 'gemini_service.dart';
 
 class RequestService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final GeminiService _gemini = GeminiService();
+  static const _collectionName = 'emergency_requests';
+
+  final FirebaseFirestore _db;
+  final GeminiService _gemini;
   final _uuid = const Uuid();
 
-  CollectionReference get _col => _db.collection('emergency_requests');
+  RequestService({
+    FirebaseFirestore? db,
+    GeminiService? gemini,
+  })  : _db = db ?? FirebaseFirestore.instance,
+        _gemini = gemini ?? GeminiService();
 
-  // ── All open requests (requires composite index: status + criticalityScore + timestamp)
+  CollectionReference get _col => _db.collection(_collectionName);
+
   Stream<List<EmergencyRequest>> watchOpenRequests() {
     return _col
         .where('status', isEqualTo: 'open')
         .orderBy('criticalityScore', descending: true)
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snap) => snap.docs.map(EmergencyRequest.fromFirestore).toList());
+        .map((snap) => snap.docs
+            .map((doc) {
+              try {
+                return EmergencyRequest.fromFirestore(doc);
+              } catch (_) {
+                return null;
+              }
+            })
+            .whereType<EmergencyRequest>()
+            .toList());
   }
 
-  // ── Geofenced requests (requires composite index: status + latitude)
   Stream<List<EmergencyRequest>> watchNearbyRequests({
     required double latitude,
     required double longitude,
@@ -30,7 +46,11 @@ class RequestService {
   }) {
     const kmPerDegree = 111.0;
     final latDelta = radiusKm / kmPerDegree;
-    final lngDelta = radiusKm / (kmPerDegree * cos(latitude * pi / 180));
+
+    final cosLat = cos(latitude * pi / 180).clamp(0.001, 1.0);
+    final lngDelta = radiusKm / (kmPerDegree * cosLat);
+
+    final radiusMetres = radiusKm * 1000;
 
     return _col
         .where('status', isEqualTo: 'open')
@@ -38,31 +58,41 @@ class RequestService {
             isGreaterThanOrEqualTo: latitude - latDelta,
             isLessThanOrEqualTo: latitude + latDelta)
         .snapshots()
-        .map((snap) => snap.docs.map(EmergencyRequest.fromFirestore).where((r) {
-              final dist = Geolocator.distanceBetween(
-                latitude,
-                longitude,
-                r.latitude,
-                r.longitude,
-              );
-              return dist <= radiusKm * 1000;
-            }).toList()
-              ..sort(
-                  (a, b) => b.criticalityScore.compareTo(a.criticalityScore)));
+        .map((snap) {
+      final requests = snap.docs
+          .map((doc) {
+            try {
+              return EmergencyRequest.fromFirestore(doc);
+            } catch (_) {
+              return null;
+            }
+          })
+          .whereType<EmergencyRequest>()
+          .where((r) {
+            final distMetres = Geolocator.distanceBetween(
+              latitude,
+              longitude,
+              r.latitude,
+              r.longitude,
+            );
+            return distMetres <= radiusMetres;
+          })
+          .toList();
+
+      requests.sort((a, b) => b.criticalityScore.compareTo(a.criticalityScore));
+      return requests;
+    });
   }
 
-  // ── Submit with parallel location + AI triage
   Future<String> submitRequest({
     required String userId,
     required String userDisplayName,
     required String description,
   }) async {
-    // ✅ Launch both concurrently
-    final positionFuture = _getLocation();
-    final triageFuture = _gemini.analyzeEmergency(description);
-
-    final position = await positionFuture;
-    final triage = await triageFuture;
+    final (position, triage) = await (
+      _getLocation(),
+      _gemini.analyzeEmergency(description),
+    ).wait;
 
     final id = _uuid.v4();
     final request = EmergencyRequest(
@@ -78,16 +108,31 @@ class RequestService {
       timestamp: DateTime.now(),
     );
 
-    await _col.doc(id).set(request.toFirestore());
+    await _col.doc(id).set({
+      ...request.toFirestore(),
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
     return id;
   }
 
-  Future<void> resolveRequest(String requestId) =>
-      _col.doc(requestId).update({'status': RequestStatus.resolved.name});
+  Future<void> resolveRequest(
+    String requestId, {
+    required String callerId,
+  }) async {
+    final doc = await _col.doc(requestId).get();
+    final data = doc.data() as Map<String, dynamic>?;
 
-  // ── Fixed location helper with deniedForever handling
+    if (data == null) throw Exception('Request $requestId not found.');
+    if (data['userId'] != callerId) {
+      throw Exception('Unauthorized: only the requester can resolve this.');
+    }
+
+    await _col.doc(requestId).update({'status': RequestStatus.resolved.name});
+  }
+
   Future<Position> _getLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw Exception('Location services are disabled. Please enable GPS.');
     }
@@ -110,6 +155,7 @@ class RequestService {
 
     return Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
+      timeLimit: const Duration(seconds: 10),
     );
   }
 }
