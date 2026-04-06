@@ -37,8 +37,8 @@ class EmergencyRequest {
       userId: data['userId'] ?? '',
       userDisplayName: data['userDisplayName'] ?? 'Anonymous',
       description: data['description'] ?? '',
-      latitude: (data['latitude'] as num).toDouble(),
-      longitude: (data['longitude'] as num).toDouble(),
+      latitude: (data['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (data['longitude'] as num?)?.toDouble() ?? 0.0,
       criticalityLevel: CriticalityLevel.values.firstWhere(
         (e) => e.name == data['criticalityLevel'],
         orElse: () => CriticalityLevel.medium,

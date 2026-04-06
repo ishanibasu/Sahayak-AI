@@ -43,23 +43,13 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# ========================
-# ENV / SECRETS / VENV
-# ========================
-
-# Environment variables
+# ── Secrets & Environment Variables ──
 .env
 .env.*
 *.env
+!.env.example
 
-# Python virtual environments
-venv/
-env/
-ENV/
-.venv/
-
-# Node (if used)
-node_modules/
-
-# OS / temp env files
-*.local
+# ── Build & Deploy Scripts (local only) ──
+build_and_deploy.bat
+deploy.bat
+*.secret.bat

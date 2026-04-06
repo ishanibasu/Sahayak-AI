@@ -1,26 +1,43 @@
 {
   "project_info": {
-    "project_number": "548087891396",
-    "project_id": "sahayak-ai-44a6c",
-    "storage_bucket": "sahayak-ai-44a6c.firebasestorage.app"
+    "project_number": "9716153561",
+    "project_id": "sahayak-ai-47dcb",
+    "storage_bucket": "sahayak-ai-47dcb.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:548087891396:android:093ed314cad1dce29b5091",
+        "mobilesdk_app_id": "1:9716153561:android:2b05a7eb6b21f52144d2c8",
         "android_client_info": {
           "package_name": "com.roniit.ishani.sahayakai"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "9716153561-j08bgjrk6vdkdg6ruq1qqjc7lp5u81c8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBIsgOkue31NeRlcFAJbJnzGLbWSKVrae8"
+          "current_key": "AIzaSyDwXXFJU4CFbip4dvST3AMxkUKJJe_o8O4"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9716153561-j08bgjrk6vdkdg6ruq1qqjc7lp5u81c8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "9716153561-agh3e6rtvq74bkl5io4tf3jaf92jto6a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.myApp"
+              }
+            }
+          ]
         }
       }
     }
