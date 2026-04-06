@@ -18,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   bool _isLogin = true;
   bool _isLoading = false;
+  bool _isGoogleLoading = false;
   bool _obscurePassword = true;
 
   late final AnimationController _animCtrl;
@@ -67,23 +68,41 @@ class _LoginScreenState extends State<LoginScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              e.toString().replaceAll('Exception: ', ''),
-              style: const TextStyle(
-                  fontFamily: 'Courier New', color: _textPrimary),
-            ),
-            backgroundColor: _red,
-            behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          ),
-        );
+        _showError(e.toString().replaceAll('Exception: ', ''));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  // ── Google Sign-In ─────────────────────────────────────────────
+  Future<void> _signInWithGoogle() async {
+    setState(() => _isGoogleLoading = true);
+    try {
+      await _auth.signInWithGoogle();
+      // StreamBuilder in main.dart handles navigation automatically
+    } catch (e) {
+      if (mounted) {
+        _showError(e.toString().replaceAll('Exception: ', ''));
+      }
+    } finally {
+      if (mounted) setState(() => _isGoogleLoading = false);
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style:
+              const TextStyle(fontFamily: 'Courier New', color: _textPrimary),
+        ),
+        backgroundColor: _red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      ),
+    );
   }
 
   @override
@@ -398,6 +417,81 @@ class _LoginScreenState extends State<LoginScreen>
 
                             const SizedBox(height: 12),
 
+                            // ── Divider ──────────────────────────
+                            Row(
+                              children: [
+                                Expanded(
+                                    child:
+                                        Container(height: 1, color: _border)),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  child: Text(
+                                    'OR',
+                                    style: TextStyle(
+                                      color: _textMuted,
+                                      fontSize: 10,
+                                      letterSpacing: 2,
+                                      fontFamily: 'Courier New',
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                    child:
+                                        Container(height: 1, color: _border)),
+                              ],
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            // ── Google Sign-In button ────────────
+                            SizedBox(
+                              height: 52,
+                              child: OutlinedButton(
+                                onPressed:
+                                    _isGoogleLoading ? null : _signInWithGoogle,
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: _textPrimary,
+                                  side: const BorderSide(color: _border),
+                                  backgroundColor: _surfaceHigh,
+                                  disabledBackgroundColor:
+                                      _surfaceHigh.withOpacity(0.4),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                ),
+                                child: _isGoogleLoading
+                                    ? const SizedBox(
+                                        height: 18,
+                                        width: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: _textMuted,
+                                        ),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          // Google 'G' logo painted manually
+                                          // (no asset needed)
+                                          _GoogleIcon(),
+                                          const SizedBox(width: 10),
+                                          const Text(
+                                            'CONTINUE WITH GOOGLE',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 2,
+                                              fontFamily: 'Courier New',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 12),
+
                             // ── Toggle ───────────────────────────
                             TextButton(
                               onPressed: () {
@@ -455,6 +549,69 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
+}
+
+// ── Google 'G' icon (no image asset needed) ────────────────────────
+class _GoogleIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: const Size(18, 18),
+      painter: _GoogleIconPainter(),
+    );
+  }
+}
+
+class _GoogleIconPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final center = rect.center;
+    final r = size.width / 2;
+
+    // Colors
+    const blue = Color(0xFF4285F4);
+    const green = Color(0xFF34A853);
+    const yellow = Color(0xFFFBBC05);
+    const red = Color(0xFFEA4335);
+
+    final paint = Paint()..style = PaintingStyle.stroke;
+
+    // Blue arc (right)
+    paint
+      ..color = blue
+      ..strokeWidth = size.width * 0.22;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: r * 0.72), -0.35,
+        1.75, false, paint);
+
+    // Red arc (top-left)
+    paint.color = red;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: r * 0.72), 3.49,
+        1.22, false, paint);
+
+    // Yellow arc (bottom-left)
+    paint.color = yellow;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: r * 0.72), 2.46,
+        1.05, false, paint);
+
+    // Green arc (bottom)
+    paint.color = green;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: r * 0.72), 1.4, 1.08,
+        false, paint);
+
+    // Horizontal bar (blue)
+    paint
+      ..color = blue
+      ..strokeWidth = size.width * 0.22;
+    canvas.drawLine(
+      Offset(center.dx, center.dy),
+      Offset(center.dx + r * 0.72, center.dy),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // ── Subtle dot-grid background painter ────────────────────────────
