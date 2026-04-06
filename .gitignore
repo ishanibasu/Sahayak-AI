@@ -38,7 +38,28 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
+# Android Studio build artifacts
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ========================
+# ENV / SECRETS / VENV
+# ========================
+
+# Environment variables
+.env
+.env.*
+*.env
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Node (if used)
+node_modules/
+
+# OS / temp env files
+*.local
