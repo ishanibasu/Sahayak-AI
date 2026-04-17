@@ -25,14 +25,11 @@ class DefaultFirebaseOptions {
     measurementId: 'G-4ER4FRDNXF',
   );
 
-  // ── Paste your Firebase Console values here ──
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: "AIzaSyDwXXFJU4CFbip4dvST3AMxkUKJJe_o8O4",
-    authDomain: "sahayak-ai-47dcb.firebaseapp.com",
-    projectId: "sahayak-ai-47dcb",
-    storageBucket: "sahayak-ai-47dcb.firebasestorage.app",
-    messagingSenderId: "9716153561",
-    appId: "1:9716153561:android:2b05a7eb6b21f52144d2c8",
+    apiKey: 'AIzaSyDwXXFJU4CFbip4dvST3AMxkUKJJe_o8O4',
+    appId: '1:9716153561:android:2b05a7eb6b21f52144d2c8',
+    messagingSenderId: '9716153561',
+    projectId: 'sahayak-ai-47dcb',
+    storageBucket: 'sahayak-ai-47dcb.firebasestorage.app',
   );
 }
