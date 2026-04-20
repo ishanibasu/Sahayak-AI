@@ -53,3 +53,12 @@ app.*.map.json
 build_and_deploy.bat
 deploy.bat
 *.secret.bat
+
+
+# ── Firebase / Google Services (VERY IMPORTANT) ──
+google-services.json
+GoogleService-Info.plist
+
+# Optional: if you use multiple flavors
+**/google-services.json
+**/GoogleService-Info.plist
