@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:9716153561:android:2b05a7eb6b21f52144d2c8",
+        "mobilesdk_app_id": "1:9716153561:android:42492eacda4b322c44d2c8",
         "android_client_info": {
-          "package_name": "com.roniit.ishani.sahayakai"
+          "package_name": "com.android.sahayakai"
         }
       },
       "oauth_client": [

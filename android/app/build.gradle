@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace "com.roniit.ishani.sahayakai"
+    namespace "com.android.sahayakai"
     compileSdk 36
     ndkVersion "27.0.12077973"
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.roniit.ishani.sahayakai"
+        applicationId "com.android.sahayakai"
         minSdkVersion 24
         targetSdk 36
         versionCode 1
@@ -40,4 +40,10 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.3.10"
+
+    // Firebase BoM - manages all Firebase library versions automatically
+    implementation platform('com.google.firebase:firebase-bom:34.12.0')
+
+    // Firebase Analytics (add more Firebase libs below as needed)
+    implementation 'com.google.firebase:firebase-analytics'
 }
